@@ -1,44 +1,42 @@
 #!/usr/bin/python3
+"""0. Prime Game - Maria and Ben are playing a game"""
 
 
 def isWinner(x, nums):
-    if x < 1 or not nums:
+    """x - rounds
+    nums - numbers list
+    """
+    if x <= 0 or nums is None:
         return None
-    
-    max_num = max(nums)
-    
-    # Sieve of Eratosthenes to find all prime numbers up to max_num
-    primes = [True] * (max_num + 1)
-    primes[0] = primes[1] = False  # 0 and 1 are not prime numbers
-    for i in range(2, int(max_num**0.5) + 1):
-        if primes[i]:
-            for j in range(i * i, max_num + 1, i):
-                primes[j] = False
-    
-    # List to count the number of prime numbers up to each number n
-    prime_count = [0] * (max_num + 1)
-    for i in range(1, max_num + 1):
-        prime_count[i] = prime_count[i - 1] + (1 if primes[i] else 0)
-    
-    # Count wins for Maria and Ben
-    maria_wins = 0
-    ben_wins = 0
-    
-    for n in nums:
-        if prime_count[n] % 2 == 0:
-            ben_wins += 1  # Ben wins if the number of primes is even
-        else:
-            maria_wins += 1  # Maria wins if the number of primes is odd
-    
-    # Determine the overall winner
-    if maria_wins > ben_wins:
-        return "Maria"
-    elif ben_wins > maria_wins:
-        return "Ben"
-    else:
+    if x != len(nums):
         return None
 
-# Example usage:
-x = 5
-nums = [2, 5, 1, 4, 3]
-print(f"Winner: {isWinner(x, nums)}")
+    ben = 0
+    maria = 0
+
+    a = [1 for x in range(sorted(nums)[-1] + 1)]
+    a[0], a[1] = 0, 0
+    for i in range(2, len(a)):
+        rm_multiples(a, i)
+
+    for i in nums:
+        if sum(a[0:i + 1]) % 2 == 0:
+            ben += 1
+        else:
+            maria += 1
+    if ben > maria:
+        return "Ben"
+    if maria > ben:
+        return "Maria"
+    return None
+
+
+def rm_multiples(ls, x):
+    """removes multiple
+    of primes
+    """
+    for i in range(2, len(ls)):
+        try:
+            ls[i * x] = 0
+        except (ValueError, IndexError):
+            break
